@@ -3,507 +3,165 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lou's Checklist</title>
+<title>🏋️ Gym Checklist</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --bg: #0c0c0e; --surface: #131317; --surface2: #1a1a21; --border: #2a2a36;
     --text: #e8e8f2; --muted: #8888a2;
-    --green: #6ee89b; --green-bg: #162b20; --green-row: #0d2318; --green-hover: #102c1e;
-    --blue: #7db8ff; --blue-bg: #101f36; --blue-row: #0a1628; --blue-hover: #0d1f38;
+    --accent: #6ee89b; --accent-bg: #162b20; --row: #0d2318; --row-hover: #102c1e;
     --amber: #ffc96b; --amber-bg: #2e1f08;
     --purple: #c09eff; --purple-bg: #1e1330;
     --red: #ff8c8c; --radius: 10px;
   }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 1.25rem; min-height: 100vh; padding: 2rem 2rem 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 1.1rem; min-height: 100vh; padding: 0; }
 
-  /* HEADER */
-  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
-  .header-left .title { font-size: 3.2rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text); line-height: 1; }
-  .header-left .subtitle { font-size: 1.1rem; color: var(--muted); margin-top: 0.4rem; }
-  .header-right { text-align: right; }
-  .header-right .day-name { font-size: 1.1rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-  .header-right .date-big { font-size: 2rem; font-weight: 700; color: var(--text); line-height: 1.1; }
-  .header-right .year { font-size: 1.1rem; color: var(--muted); }
+  /* STICKY TOP BAR */
+  .top-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    border-bottom: 1.5px solid var(--border);
+    padding: 0.75rem 1.4rem;
+  }
+  .top-bar-inner { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem; }
+  .top-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text); display: flex; align-items: center; gap: 0.4rem; }
+  .top-date { text-align: right; }
+  .top-date .d-day { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .top-date .d-main { font-size: 1rem; font-weight: 600; color: var(--text); line-height: 1.1; }
+  .top-date .d-year { font-size: 0.75rem; color: var(--muted); }
+  .progress-bar-bg { background: var(--surface2); border-radius: 999px; height: 7px; overflow: hidden; border: 1px solid var(--border); flex: 1; min-width: 80px; }
+  .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.35s cubic-bezier(.4,0,.2,1); width: 0%; }
+  .stat-pill { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 999px; padding: 0.18rem 0.85rem; font-size: 0.95rem; color: var(--muted); font-weight: 500; white-space: nowrap; }
+  .stat-pill span { color: var(--accent); font-weight: 700; }
 
-  /* TABS */
-  .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
-  .tab { padding: 0.5rem 1.4rem; border-radius: var(--radius); border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: all 0.18s; font-family: 'DM Sans', sans-serif; }
-  .tab:hover { border-color: var(--green); color: var(--green); }
-  .tab.active { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+  /* CONTENT */
+  .content { padding: 1rem 1.2rem 5rem; }
 
-  /* LIST PANELS */
-  .list-panel { display: none; }
-  .list-panel.active { display: block; }
+  /* DONE BANNER */
+  .done-banner { display: none; background: var(--accent-bg); border: 1.5px solid var(--accent); border-radius: var(--radius); padding: 0.75rem 1.2rem; color: var(--accent); font-size: 1.05rem; font-weight: 600; text-align: center; margin-bottom: 1rem; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 
-  /* CHECKLIST CARD */
-  .checklist-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1.5rem; }
-  .card-header { background: var(--green-bg); border-bottom: 1.5px solid var(--border); padding: 1.1rem 1.6rem; display: flex; align-items: center; justify-content: space-between; }
-  .card-header.blue { background: var(--blue-bg); }
-  .card-header-left { display: flex; align-items: center; gap: 0.8rem; }
-  .card-title { font-size: 1.5rem; font-weight: 700; color: var(--green); }
-  .card-title.blue { color: var(--blue); }
-  .card-icon { font-size: 1.5rem; }
-  .progress-pill { font-size: 1.1rem; font-weight: 600; color: var(--green); background: #0d2318; border: 1.5px solid var(--green); border-radius: 999px; padding: 0.2rem 1rem; }
-  .progress-pill.blue { color: var(--blue); background: var(--blue-row); border-color: var(--blue); }
+  /* CARD */
+  .checklist-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
 
   /* SECTION LABELS */
-  .section-label { padding: 0.55rem 1.6rem; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber); background: var(--amber-bg); border-bottom: 1.5px solid var(--border); }
+  .section-label { padding: 0.45rem 1.2rem; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--amber); background: var(--amber-bg); border-bottom: 1.5px solid var(--border); }
   .section-label.purple { color: var(--purple); background: var(--purple-bg); }
-  .section-label.incart { color: var(--blue); background: var(--blue-bg); }
 
-  /* CHECKLIST ITEMS */
-  .checklist-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1.6rem; background: var(--green-row); border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; user-select: none; }
-  .checklist-item.blue-row { background: var(--blue-row); }
-  .checklist-item.blue-row:hover { background: var(--blue-hover); }
+  /* ITEMS */
+  .checklist-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.65rem 1.2rem; background: var(--row); border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; user-select: none; }
   .checklist-item:last-child { border-bottom: none; }
-  .checklist-item:hover { background: var(--green-hover); }
-  .checklist-item.checked { opacity: 0.5; }
+  .checklist-item:hover { background: var(--row-hover); }
+  .checklist-item.checked { opacity: 0.45; }
   .checklist-item.checked .item-label { color: var(--muted); }
-
-  /* Custom checkbox */
-  .custom-check { width: 1.5rem; height: 1.5rem; border-radius: 5px; border: 2px solid var(--green); background: transparent; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s; }
-  .custom-check.blue { border-color: var(--blue); }
-  .checklist-item.checked .custom-check { background: var(--green); border-color: var(--green); }
-  .checklist-item.checked .custom-check.blue { background: var(--blue); border-color: var(--blue); }
-  .custom-check svg { display: none; width: 0.9rem; height: 0.9rem; }
+  .custom-check { width: 1.3rem; height: 1.3rem; border-radius: 4px; border: 2px solid var(--accent); background: transparent; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+  .checklist-item.checked .custom-check { background: var(--accent); border-color: var(--accent); }
+  .custom-check svg { display: none; width: 0.75rem; height: 0.75rem; }
   .checklist-item.checked .custom-check svg { display: block; }
-  .item-label { font-size: 1.25rem; font-weight: 400; color: var(--text); flex: 1; }
-  .item-note { font-size: 1rem; color: var(--muted); margin-left: auto; font-style: italic; }
+  .item-label { font-size: 1.1rem; font-weight: 400; color: var(--text); flex: 1; }
+  .item-note { font-size: 0.85rem; color: var(--muted); font-style: italic; }
 
-  /* Remove btn (Costco) */
-  .remove-btn { background: none; border: none; color: var(--muted); cursor: pointer; padding: 0.2rem 0.4rem; font-size: 1.1rem; line-height: 1; border-radius: 4px; transition: color 0.15s, background 0.15s; flex-shrink: 0; }
-  .remove-btn:hover { color: var(--red); background: rgba(255,140,140,0.1); }
-
-  /* Costco add-item box */
-  .add-item-row { display: flex; gap: 0.7rem; padding: 1rem 1.6rem; background: var(--surface2); border-bottom: 1.5px solid var(--border); }
-  .add-item-input { flex: 1; background: var(--bg); border: 1.5px solid var(--border); color: var(--text); border-radius: var(--radius); padding: 0.55rem 1rem; font-family: 'DM Sans', sans-serif; font-size: 1.1rem; outline: none; transition: border-color 0.15s; }
-  .add-item-input:focus { border-color: var(--blue); }
-  .add-item-btn { background: var(--blue-bg); border: 1.5px solid var(--blue); color: var(--blue); border-radius: var(--radius); padding: 0.55rem 1.2rem; font-family: 'DM Sans', sans-serif; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
-  .add-item-btn:hover { background: #152840; }
-
-  /* In Cart section */
-  .incart-section { margin-top: 0.5rem; }
-  .incart-item { display: flex; align-items: center; gap: 1rem; padding: 0.65rem 1.6rem; background: var(--blue-row); border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; transition: background 0.15s; opacity: 0.65; }
-  .incart-item:hover { background: var(--blue-hover); opacity: 0.8; }
-  .incart-item .item-label { color: var(--muted); font-size: 1.1rem; }
-  .incart-check { width: 1.3rem; height: 1.3rem; border-radius: 4px; background: var(--blue); border: 2px solid var(--blue); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-  .incart-check svg { width: 0.8rem; height: 0.8rem; }
-
-  /* BOTTOM BAR */
-  .bottom-bar { border-top: 1.5px solid var(--border); padding: 1.2rem 2rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin: 0 -2rem; background: var(--surface); }
-  .progress-wrap { flex: 1; min-width: 160px; }
-  .progress-label { font-size: 1.1rem; color: var(--muted); margin-bottom: 0.4rem; }
-  .progress-bar-bg { background: var(--surface2); border-radius: 999px; height: 10px; overflow: hidden; border: 1px solid var(--border); }
-  .progress-bar-fill { height: 100%; background: var(--green); border-radius: 999px; transition: width 0.35s cubic-bezier(.4,0,.2,1); }
-  .progress-bar-fill.blue { background: var(--blue); }
-  .stats { display: flex; gap: 0.7rem; flex-wrap: wrap; }
-  .stat-pill { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 999px; padding: 0.25rem 1rem; font-size: 1.1rem; color: var(--muted); font-weight: 500; }
-  .stat-pill span { color: var(--green); font-weight: 700; }
-  .stat-pill span.blue { color: var(--blue); }
-  .reset-btn { background: transparent; border: 1.5px solid var(--red); color: var(--red); border-radius: var(--radius); padding: 0.45rem 1.4rem; font-size: 1.1rem; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 0.5rem; }
+  /* BOTTOM RESET BAR */
+  .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1.5px solid var(--border); padding: 0.85rem 1.4rem; display: flex; justify-content: center; }
+  .reset-btn { background: transparent; border: 1.5px solid var(--red); color: var(--red); border-radius: var(--radius); padding: 0.45rem 2rem; font-size: 1rem; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 0.5rem; }
   .reset-btn:hover { background: rgba(255,140,140,0.1); }
-
-  .done-banner { display: none; background: var(--green-bg); border: 1.5px solid var(--green); border-radius: var(--radius); padding: 1rem 1.6rem; color: var(--green); font-size: 1.25rem; font-weight: 600; text-align: center; margin-bottom: 1.5rem; animation: fadeIn 0.4s ease; }
-  .done-banner.blue { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-
-  .checkmark-svg { display: block; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-left">
-    <div class="title">Lou's Checklist</div>
-    <div class="subtitle">Pack smart. Show up ready.</div>
-  </div>
-  <div class="header-right">
-    <div class="day-name" id="dayName"></div>
-    <div class="date-big" id="dateBig"></div>
-    <div class="year" id="yearEl"></div>
-  </div>
-</div>
-
-<div class="tabs">
-  <button class="tab active" data-panel="gym">🏋️ Gym</button>
-  <button class="tab" data-panel="office">🏢 Office</button>
-  <button class="tab" data-panel="costco">🛒 Costco</button>
-</div>
-
-<!-- ==================== GYM ==================== -->
-<div class="list-panel active" id="panel-gym">
-  <div class="done-banner" id="gym-done">🎉 All packed! You're ready to crush it.</div>
-  <div class="checklist-card">
-    <div class="card-header">
-      <div class="card-header-left"><span class="card-icon">🏋️</span><span class="card-title">Gym Checklist</span></div>
-      <div class="progress-pill" id="gym-pill">0 / 17</div>
+<!-- STICKY TOP -->
+<div class="top-bar">
+  <div class="top-header">
+    <div class="top-title">🏋️ Gym Checklist</div>
+    <div class="top-date">
+      <div class="d-day" id="dayName"></div>
+      <div class="d-main" id="dateBig"></div>
+      <div class="d-year" id="yearEl"></div>
     </div>
+  </div>
+  <div class="top-bar-inner">
+    <div class="stat-pill">Checked <span id="checkedCount">0</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="stat-pill">Left <span id="remainingCount">17</span></div>
+  </div>
+</div>
 
+<div class="content">
+  <div class="done-banner" id="doneBanner">🎉 All packed! You're ready to crush it.</div>
+
+  <div class="checklist-card">
     <div class="section-label">👕 Gear</div>
-    <div class="checklist-item" data-list="gym" data-id="g1"><div class="custom-check">CKSVG</div><span class="item-label">Gym Shorts</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g2"><div class="custom-check">CKSVG</div><span class="item-label">Gym Shirt</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g3"><div class="custom-check">CKSVG</div><span class="item-label">Gym Boxers</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g4"><div class="custom-check">CKSVG</div><span class="item-label">Gym Socks</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g5"><div class="custom-check">CKSVG</div><span class="item-label">Gym Towel</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g6"><div class="custom-check">CKSVG</div><span class="item-label">Gym Shoes</span></div>
+    <div class="checklist-item" data-id="g1"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Shorts</span></div>
+    <div class="checklist-item" data-id="g2"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Shirt</span></div>
+    <div class="checklist-item" data-id="g3"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Boxers</span></div>
+    <div class="checklist-item" data-id="g4"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Socks</span></div>
+    <div class="checklist-item" data-id="g5"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Towel</span></div>
+    <div class="checklist-item" data-id="g6"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Shoes</span></div>
 
     <div class="section-label">🎧 Accessories</div>
-    <div class="checklist-item" data-list="gym" data-id="g7"><div class="custom-check">CKSVG</div><span class="item-label">Apple Watch</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g8"><div class="custom-check">CKSVG</div><span class="item-label">Shure Earphones</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g9"><div class="custom-check">CKSVG</div><span class="item-label">Glasses</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g10"><div class="custom-check">CKSVG</div><span class="item-label">Key Fob</span><span class="item-note">After-hours office access</span></div>
+    <div class="checklist-item" data-id="g7"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Apple Watch</span></div>
+    <div class="checklist-item" data-id="g8"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Shure Earphones</span></div>
+    <div class="checklist-item" data-id="g9"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Glasses</span></div>
+    <div class="checklist-item" data-id="g10"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Key Fob</span><span class="item-note">After-hours office</span></div>
 
     <div class="section-label purple">🎒 In Bag</div>
-    <div class="checklist-item" data-list="gym" data-id="g11"><div class="custom-check">CKSVG</div><span class="item-label">Lock</span><span class="item-note">25 · 0 · 40</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g12"><div class="custom-check">CKSVG</div><span class="item-label">Gripads</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g13"><div class="custom-check">CKSVG</div><span class="item-label">Gum</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g14"><div class="custom-check">CKSVG</div><span class="item-label">Body Wash</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g15"><div class="custom-check">CKSVG</div><span class="item-label">Lotion</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g16"><div class="custom-check">CKSVG</div><span class="item-label">Cash for Haircut</span><span class="item-note">$40 cut + $50 tip</span></div>
-    <div class="checklist-item" data-list="gym" data-id="g17"><div class="custom-check">CKSVG</div><span class="item-label">Backup Light Towel</span></div>
-  </div>
-
-  <div class="bottom-bar">
-    <div class="progress-wrap">
-      <div class="progress-label">Progress</div>
-      <div class="progress-bar-bg"><div class="progress-bar-fill" id="gym-bar" style="width:0%"></div></div>
-    </div>
-    <div class="stats">
-      <div class="stat-pill">Checked <span id="gym-checked">0</span></div>
-      <div class="stat-pill">Remaining <span id="gym-remaining">17</span></div>
-    </div>
-    <button class="reset-btn" data-reset="gym">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1 0 1.5-3.9" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round"/><path d="M2 4v4h4" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Reset
-    </button>
+    <div class="checklist-item" data-id="g11"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Lock</span><span class="item-note">25 · 0 · 40</span></div>
+    <div class="checklist-item" data-id="g12"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gripads</span></div>
+    <div class="checklist-item" data-id="g13"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gum</span></div>
+    <div class="checklist-item" data-id="g14"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Body Wash</span></div>
+    <div class="checklist-item" data-id="g15"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Lotion</span></div>
+    <div class="checklist-item" data-id="g16"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Cash for Haircut</span><span class="item-note">$40 + $50 tip</span></div>
+    <div class="checklist-item" data-id="g17"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Backup Light Towel</span></div>
   </div>
 </div>
 
-<!-- ==================== OFFICE ==================== -->
-<div class="list-panel" id="panel-office">
-  <div class="done-banner blue" id="office-done">💼 All set! Have a great day at the office.</div>
-  <div class="checklist-card">
-    <div class="card-header blue">
-      <div class="card-header-left"><span class="card-icon">🏢</span><span class="card-title blue">Office Checklist</span></div>
-      <div class="progress-pill blue" id="office-pill">0 / 11</div>
-    </div>
-
-    <div class="section-label">👔 Essentials</div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o1"><div class="custom-check blue">CKSVG</div><span class="item-label">Wallet</span></div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o2"><div class="custom-check blue">CKSVG</div><span class="item-label">Key Fob</span></div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o3"><div class="custom-check blue">CKSVG</div><span class="item-label">Opus</span></div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o4"><div class="custom-check blue">CKSVG</div><span class="item-label">Cash on Phone</span></div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o5"><div class="custom-check blue">CKSVG</div><span class="item-label">Belt</span></div>
-
-    <div class="section-label purple">💻 Tech</div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o6"><div class="custom-check blue">CKSVG</div><span class="item-label">Laptop</span></div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o7"><div class="custom-check blue">CKSVG</div><span class="item-label">AirPods</span></div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o8"><div class="custom-check blue">CKSVG</div><span class="item-label">Apple Watch</span></div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o9"><div class="custom-check blue">CKSVG</div><span class="item-label">Glasses</span></div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o10"><div class="custom-check blue">CKSVG</div><span class="item-label">Sunglasses</span></div>
-
-    <div class="section-label">🌤️ Before You Leave</div>
-    <div class="checklist-item blue-row" data-list="office" data-id="o11"><div class="custom-check blue">CKSVG</div><span class="item-label">Check Weather</span></div>
-  </div>
-
-  <div class="bottom-bar">
-    <div class="progress-wrap">
-      <div class="progress-label">Progress</div>
-      <div class="progress-bar-bg"><div class="progress-bar-fill blue" id="office-bar" style="width:0%"></div></div>
-    </div>
-    <div class="stats">
-      <div class="stat-pill">Checked <span class="blue" id="office-checked">0</span></div>
-      <div class="stat-pill">Remaining <span class="blue" id="office-remaining">11</span></div>
-    </div>
-    <button class="reset-btn" data-reset="office">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1 0 1.5-3.9" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round"/><path d="M2 4v4h4" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Reset
-    </button>
-  </div>
-</div>
-
-<!-- ==================== COSTCO ==================== -->
-<div class="list-panel" id="panel-costco">
-  <div class="done-banner blue" id="costco-done">🛒 Cart's full! Head to checkout.</div>
-  <div class="checklist-card">
-    <div class="card-header blue">
-      <div class="card-header-left"><span class="card-icon">🛒</span><span class="card-title blue">Costco List</span></div>
-      <div class="progress-pill blue" id="costco-pill">0 / 0</div>
-    </div>
-
-    <!-- Add item -->
-    <div class="add-item-row">
-      <input class="add-item-input" id="costco-input" type="text" placeholder="Add item to list…" autocomplete="off">
-      <button class="add-item-btn" id="costco-add-btn">+ Add</button>
-    </div>
-
-    <!-- Shopping list (dynamic) -->
-    <div id="costco-shopping-list"></div>
-
-    <!-- In Cart section -->
-    <div class="incart-section" id="costco-incart-wrap" style="display:none;">
-      <div class="section-label incart">🛒 In Cart</div>
-      <div id="costco-incart-list"></div>
-    </div>
-  </div>
-
-  <div class="bottom-bar">
-    <div class="progress-wrap">
-      <div class="progress-label">Progress</div>
-      <div class="progress-bar-bg"><div class="progress-bar-fill blue" id="costco-bar" style="width:0%"></div></div>
-    </div>
-    <div class="stats">
-      <div class="stat-pill">In Cart <span class="blue" id="costco-checked">0</span></div>
-      <div class="stat-pill">Remaining <span class="blue" id="costco-remaining">0</span></div>
-    </div>
-    <button class="reset-btn" data-reset="costco">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1 0 1.5-3.9" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round"/><path d="M2 4v4h4" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Reset Cart
-    </button>
-  </div>
+<div class="bottom-bar">
+  <button class="reset-btn" id="resetBtn">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1 0 1.5-3.9" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round"/><path d="M2 4v4h4" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Reset
+  </button>
 </div>
 
 <script>
-// ─── UTILS ───────────────────────────────────────────────
-const CKSVG = `<svg viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const TOTAL = 17;
+  const now = new Date();
+  const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('dayName').textContent = DAYS[now.getDay()];
+  document.getElementById('dateBig').textContent = MONTHS[now.getMonth()] + ' ' + now.getDate();
+  document.getElementById('yearEl').textContent = now.getFullYear();
 
-// Replace placeholder text in checkboxes
-document.querySelectorAll('.custom-check').forEach(el => {
-  el.innerHTML = CKSVG;
-});
-
-// ─── DATE ────────────────────────────────────────────────
-const now = new Date();
-const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-document.getElementById('dayName').textContent = DAYS[now.getDay()];
-document.getElementById('dateBig').textContent = MONTHS[now.getMonth()] + ' ' + now.getDate();
-document.getElementById('yearEl').textContent = now.getFullYear();
-
-// ─── TABS ────────────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.list-panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
-  });
-});
-
-// ─── SIMPLE CHECKLIST ENGINE (Gym & Office) ──────────────
-function setupSimpleList(listName, total, pillId, barId, checkedId, remainingId, doneId) {
-  const key = listName + 'Checked';
-  let checked = new Set(JSON.parse(localStorage.getItem(key) || '[]'));
+  let checked = new Set(JSON.parse(localStorage.getItem('gymChecked') || '[]'));
 
   function render() {
-    document.querySelectorAll(`.checklist-item[data-list="${listName}"]`).forEach(item => {
-      const id = item.dataset.id;
-      if (checked.has(id)) item.classList.add('checked'); else item.classList.remove('checked');
+    document.querySelectorAll('.checklist-item').forEach(item => {
+      item.classList.toggle('checked', checked.has(item.dataset.id));
     });
     const count = checked.size;
-    const pct = total ? Math.round((count / total) * 100) : 0;
-    document.getElementById(pillId).textContent = count + ' / ' + total;
-    document.getElementById(barId).style.width = pct + '%';
-    document.getElementById(checkedId).textContent = count;
-    document.getElementById(remainingId).textContent = total - count;
-    document.getElementById(doneId).style.display = count === total && total > 0 ? 'block' : 'none';
+    document.getElementById('progressFill').style.width = Math.round(count/TOTAL*100) + '%';
+    document.getElementById('checkedCount').textContent = count;
+    document.getElementById('remainingCount').textContent = TOTAL - count;
+    document.getElementById('doneBanner').style.display = count === TOTAL ? 'block' : 'none';
   }
 
-  document.querySelectorAll(`.checklist-item[data-list="${listName}"]`).forEach(item => {
+  document.querySelectorAll('.checklist-item').forEach(item => {
     item.addEventListener('click', () => {
       const id = item.dataset.id;
-      if (checked.has(id)) checked.delete(id); else checked.add(id);
-      localStorage.setItem(key, JSON.stringify([...checked]));
+      checked.has(id) ? checked.delete(id) : checked.add(id);
+      localStorage.setItem('gymChecked', JSON.stringify([...checked]));
       render();
     });
   });
 
-  document.querySelector(`[data-reset="${listName}"]`).addEventListener('click', () => {
+  document.getElementById('resetBtn').addEventListener('click', () => {
     checked.clear();
-    localStorage.setItem(key, '[]');
+    localStorage.setItem('gymChecked', '[]');
     render();
   });
 
   render();
-}
-
-setupSimpleList('gym', 17, 'gym-pill', 'gym-bar', 'gym-checked', 'gym-remaining', 'gym-done');
-setupSimpleList('office', 11, 'office-pill', 'office-bar', 'office-checked', 'office-remaining', 'office-done');
-
-// ─── COSTCO ──────────────────────────────────────────────
-// Costco layout order (aisle-style grouping)
-const COSTCO_DEFAULT = [
-  // Produce / Fresh
-  "Oranges","Mandarin","Green Red Peppers","Mushroom","Cabbage","Carrot","Crispy Lettuce 5x","Baby Wipes",
-  // Bakery / Bread
-  "White Bread Villagio","Protein Pancake",
-  // Meat / Protein
-  "Chicken with Skin","Ground Beef","Lean Ground Beef (Cylinder)","Beef for Sous Vide","Chicken Strips","Bison Meat","Chicken - Kirkland Microwavable","Chicken Baked","Beef Ragu (Good Ones)","Bulgogi Sauce",
-  // Dairy / Eggs
-  "Eggs","Milk","Shredded Cheese","Cheese Slice","Cheese Mozarella",
-  // Frozen
-  "Edamame","Sweet Potato Frozen","Frozen Mango Chunks","Mozarella Sticks","Sweet Potato Fries","Quick Bites","Greek Salad",
-  // Grocery / Pantry
-  "Rice","Canola Oil","Vinegar","Salt Ground Ice","Aluminum Foil","Clear Plastic Wrap","Bruschetta","Guacamole","Onion Dried Chopped","Crispy Onions","Onion Chopped Kirkland","Jello","Orange Juice","Canada Dry Zero","Coke Zero","Bottled Water","Gum",
-  // Supplements / Health
-  "Omega3","Zinc","Probiotic on Sale","Protein Shake",
-  // Batteries / Electronics
-  "AA Batteries","AAA Batteries","Airtag Batteries","Touchbrush Phillips Replacements",
-  // Personal Care / Hygiene
-  "Toothpaste - Colgate","Toothbrush Replacements","Body Wash","Lotion Kirkland","Qtips","Handsoap","Toilet Paper","Toilet Tissue","Baby Wipes",
-  // Cleaning
-  "Dish Liquid Soap (Sunlight)","Sunlight Dishwashing Liquid","Hertel","Laundry Soap","Softener","Automatic Dishwasher Detergent","Toilet Bowl Cleaner Lysol","Bleach","Chlorine",
-  // Household
-  "Tissue Kleanex","Scott Towel","Kitchen Trash Bags","Garbage Bag","Transparent Plastic Bag Big","Buy Rags","Canadian Clear Bins",
-  // Sauces / Condiments
-  "The Keg or Diana Sauce","Diana Sauce",
-  // Seasonal / Auto
-  "Windshield Washer","Winter Salt","Car Winter Brush & Ice Remover",
-  // Apparel
-  "Office Socks",
-  // Plants / Misc
-  "Plants","Super C, Plantain Verde","Buy Lotion"
-];
-
-// Deduplicate default list
-const seen = new Set();
-const COSTCO_ITEMS_DEFAULT = COSTCO_DEFAULT.filter(item => {
-  const key = item.toLowerCase();
-  if (seen.has(key)) return false;
-  seen.add(key);
-  return true;
-});
-
-const COSTCO_KEY_ITEMS = 'costcoItems';
-const COSTCO_KEY_CART = 'costcoCart';
-
-function loadCostcoItems() {
-  const stored = localStorage.getItem(COSTCO_KEY_ITEMS);
-  return stored ? JSON.parse(stored) : [...COSTCO_ITEMS_DEFAULT];
-}
-function saveCostcoItems(items) { localStorage.setItem(COSTCO_KEY_ITEMS, JSON.stringify(items)); }
-function loadCostcoCart() { return new Set(JSON.parse(localStorage.getItem(COSTCO_KEY_CART) || '[]')); }
-function saveCostcoCart(cart) { localStorage.setItem(COSTCO_KEY_CART, JSON.stringify([...cart])); }
-
-let costcoItems = loadCostcoItems();
-let costcoCart = loadCostcoCart();
-
-function renderCostco() {
-  const shoppingEl = document.getElementById('costco-shopping-list');
-  const incartEl = document.getElementById('costco-incart-list');
-  const incartWrap = document.getElementById('costco-incart-wrap');
-  shoppingEl.innerHTML = '';
-  incartEl.innerHTML = '';
-
-  // Shopping list: items not in cart, in aisle order
-  const shopping = costcoItems.filter(item => !costcoCart.has(item.toLowerCase()));
-  shopping.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'checklist-item blue-row';
-    div.innerHTML = `
-      <div class="custom-check blue">${CKSVG}</div>
-      <span class="item-label">${item}</span>
-      <button class="remove-btn" title="Remove from list">✕</button>
-    `;
-    div.querySelector('.custom-check').addEventListener('click', (e) => {
-      e.stopPropagation();
-      costcoCart.add(item.toLowerCase());
-      saveCostcoCart(costcoCart);
-      renderCostco();
-    });
-    div.querySelector('.item-label').addEventListener('click', () => {
-      costcoCart.add(item.toLowerCase());
-      saveCostcoCart(costcoCart);
-      renderCostco();
-    });
-    div.querySelector('.remove-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      costcoItems = costcoItems.filter(i => i !== item);
-      costcoCart.delete(item.toLowerCase());
-      saveCostcoItems(costcoItems);
-      saveCostcoCart(costcoCart);
-      renderCostco();
-    });
-    shoppingEl.appendChild(div);
-  });
-
-  // In Cart: items in cart, sorted alphabetically
-  const inCart = costcoItems.filter(item => costcoCart.has(item.toLowerCase()))
-    .sort((a,b) => a.localeCompare(b));
-
-  if (inCart.length > 0) {
-    incartWrap.style.display = 'block';
-    inCart.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'incart-item';
-      div.innerHTML = `
-        <div class="incart-check">${CKSVG}</div>
-        <span class="item-label">${item}</span>
-        <button class="remove-btn" title="Remove from list">✕</button>
-      `;
-      div.querySelector('.incart-check').addEventListener('click', (e) => {
-        e.stopPropagation();
-        costcoCart.delete(item.toLowerCase());
-        saveCostcoCart(costcoCart);
-        renderCostco();
-      });
-      div.querySelector('.item-label').addEventListener('click', () => {
-        costcoCart.delete(item.toLowerCase());
-        saveCostcoCart(costcoCart);
-        renderCostco();
-      });
-      div.querySelector('.remove-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        costcoItems = costcoItems.filter(i => i !== item);
-        costcoCart.delete(item.toLowerCase());
-        saveCostcoItems(costcoItems);
-        saveCostcoCart(costcoCart);
-        renderCostco();
-      });
-      incartEl.appendChild(div);
-    });
-  } else {
-    incartWrap.style.display = 'none';
-  }
-
-  // Stats
-  const total = costcoItems.length;
-  const cartCount = inCart.length;
-  const pct = total ? Math.round((cartCount / total) * 100) : 0;
-  document.getElementById('costco-pill').textContent = cartCount + ' / ' + total;
-  document.getElementById('costco-bar').style.width = pct + '%';
-  document.getElementById('costco-checked').textContent = cartCount;
-  document.getElementById('costco-remaining').textContent = total - cartCount;
-  document.getElementById('costco-done').style.display = (cartCount === total && total > 0) ? 'block' : 'none';
-}
-
-// Add item
-function addCostcoItem() {
-  const input = document.getElementById('costco-input');
-  const val = input.value.trim();
-  if (!val) return;
-  const exists = costcoItems.some(i => i.toLowerCase() === val.toLowerCase());
-  if (!exists) {
-    costcoItems.push(val);
-    saveCostcoItems(costcoItems);
-  }
-  input.value = '';
-  renderCostco();
-  input.focus();
-}
-document.getElementById('costco-add-btn').addEventListener('click', addCostcoItem);
-document.getElementById('costco-input').addEventListener('keydown', e => { if (e.key === 'Enter') addCostcoItem(); });
-
-// Reset Costco
-document.querySelector('[data-reset="costco"]').addEventListener('click', () => {
-  costcoCart.clear();
-  saveCostcoCart(costcoCart);
-  renderCostco();
-});
-
-renderCostco();
 </script>
 </body>
 </html>
