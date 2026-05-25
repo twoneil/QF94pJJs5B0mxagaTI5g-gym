@@ -13,7 +13,7 @@
     --accent: #6ee89b; --accent-bg: #162b20; --row: #0d2318; --row-hover: #102c1e;
     --amber: #ffc96b; --amber-bg: #2e1f08;
     --purple: #c09eff; --purple-bg: #1e1330;
-    --red: #ff8c8c; --radius: 10px;
+    --red: #ff8c8c; --blue: #7eb8ff; --radius: 10px;
   }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 1.1rem; min-height: 100vh; padding: 0; }
 
@@ -64,9 +64,12 @@
   .item-note { font-size: 0.85rem; color: var(--muted); font-style: italic; }
 
   /* BOTTOM RESET BAR */
-  .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1.5px solid var(--border); padding: 0.85rem 1.4rem; display: flex; justify-content: center; }
-  .reset-btn { background: transparent; border: 1.5px solid var(--red); color: var(--red); border-radius: var(--radius); padding: 0.45rem 2rem; font-size: 1rem; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 0.5rem; }
-  .reset-btn:hover { background: rgba(255,140,140,0.1); }
+  .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1.5px solid var(--border); padding: 0.85rem 1.4rem; display: flex; justify-content: center; gap: 0.75rem; }
+  .reset-btn { background: transparent; border-radius: var(--radius); padding: 0.45rem 1.5rem; font-size: 1rem; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 0.5rem; }
+  .reset-btn.red { border: 1.5px solid var(--red); color: var(--red); }
+  .reset-btn.red:hover { background: rgba(255,140,140,0.1); }
+  .reset-btn.blue { border: 1.5px solid var(--blue); color: var(--blue); }
+  .reset-btn.blue:hover { background: rgba(126,184,255,0.1); }
 </style>
 </head>
 <body>
@@ -93,39 +96,46 @@
 
   <div class="checklist-card">
     <div class="section-label">👕 Gear</div>
-    <div class="checklist-item" data-id="g1"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Shorts</span></div>
-    <div class="checklist-item" data-id="g2"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Shirt</span></div>
-    <div class="checklist-item" data-id="g3"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Boxers</span></div>
-    <div class="checklist-item" data-id="g4"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Socks</span></div>
-    <div class="checklist-item" data-id="g5"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Towel</span></div>
-    <div class="checklist-item" data-id="g6"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Shoes</span></div>
+    <div class="checklist-item" data-id="g1" data-group="gear"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Shorts</span></div>
+    <div class="checklist-item" data-id="g2" data-group="gear"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Shirt</span></div>
+    <div class="checklist-item" data-id="g3" data-group="gear"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Boxers</span></div>
+    <div class="checklist-item" data-id="g4" data-group="gear"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Socks</span></div>
+    <div class="checklist-item" data-id="g5" data-group="gear"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Towel</span></div>
+    <div class="checklist-item" data-id="g6" data-group="gear"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gym Shoes</span></div>
 
     <div class="section-label">🎧 Accessories</div>
-    <div class="checklist-item" data-id="g7"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Apple Watch</span></div>
-    <div class="checklist-item" data-id="g8"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Shure Earphones</span></div>
-    <div class="checklist-item" data-id="g9"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Glasses</span></div>
-    <div class="checklist-item" data-id="g10"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Key Fob</span><span class="item-note">After-hours office</span></div>
+    <div class="checklist-item" data-id="g7" data-group="accessories"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Apple Watch</span></div>
+    <div class="checklist-item" data-id="g8" data-group="accessories"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Shure Earphones</span></div>
+    <div class="checklist-item" data-id="g9" data-group="accessories"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Glasses</span></div>
+    <div class="checklist-item" data-id="g10" data-group="accessories"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Key Fob</span><span class="item-note">After-hours office</span></div>
 
     <div class="section-label purple">🎒 In Bag</div>
-    <div class="checklist-item" data-id="g11"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Lock</span><span class="item-note">25 · 0 · 40</span></div>
-    <div class="checklist-item" data-id="g12"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gripads</span></div>
-    <div class="checklist-item" data-id="g13"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gum</span></div>
-    <div class="checklist-item" data-id="g14"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Body Wash</span></div>
-    <div class="checklist-item" data-id="g15"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Lotion</span></div>
-    <div class="checklist-item" data-id="g16"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Cash for Haircut</span><span class="item-note">$40 + $50 tip</span></div>
-    <div class="checklist-item" data-id="g17"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Backup Light Towel</span></div>
+    <div class="checklist-item" data-id="g11" data-group="bag"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Lock</span><span class="item-note">25 · 0 · 40</span></div>
+    <div class="checklist-item" data-id="g12" data-group="bag"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gripads</span></div>
+    <div class="checklist-item" data-id="g13" data-group="bag"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Gum</span></div>
+    <div class="checklist-item" data-id="g14" data-group="bag"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Body Wash</span></div>
+    <div class="checklist-item" data-id="g15" data-group="bag"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Lotion</span></div>
+    <div class="checklist-item" data-id="g16" data-group="bag"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Cash for Haircut</span><span class="item-note">$45 + $50 tip</span></div>
+    <div class="checklist-item" data-id="g17" data-group="bag"><div class="custom-check"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#0c0c0e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="item-label">Backup Light Towel</span></div>
   </div>
 </div>
 
 <div class="bottom-bar">
-  <button class="reset-btn" id="resetBtn">
+  <button class="reset-btn red" id="resetBtn">
     <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1 0 1.5-3.9" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round"/><path d="M2 4v4h4" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     Reset
+  </button>
+  <button class="reset-btn blue" id="bagCheckBtn">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M5 2h6l1.5 3H3.5L5 2z" stroke="#7eb8ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="5" width="12" height="9" rx="1.5" stroke="#7eb8ff" stroke-width="1.6"/></svg>
+    Bag Check
   </button>
 </div>
 
 <script>
   const TOTAL = 17;
+  const BAG_IDS = ['g11','g12','g13','g14','g15','g16','g17'];
+  const NON_BAG_IDS = ['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10'];
+
   const now = new Date();
   const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -155,9 +165,17 @@
     });
   });
 
+  // Reset: clears Gear + Accessories only (not In Bag)
   document.getElementById('resetBtn').addEventListener('click', () => {
-    checked.clear();
-    localStorage.setItem('gymChecked', '[]');
+    NON_BAG_IDS.forEach(id => checked.delete(id));
+    localStorage.setItem('gymChecked', JSON.stringify([...checked]));
+    render();
+  });
+
+  // Bag Check: clears In Bag only
+  document.getElementById('bagCheckBtn').addEventListener('click', () => {
+    BAG_IDS.forEach(id => checked.delete(id));
+    localStorage.setItem('gymChecked', JSON.stringify([...checked]));
     render();
   });
 
