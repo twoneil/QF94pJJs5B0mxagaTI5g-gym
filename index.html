@@ -70,6 +70,23 @@
   .reset-btn.red:hover { background: rgba(255,140,140,0.1); }
   .reset-btn.blue { border: 1.5px solid var(--blue); color: var(--blue); }
   .reset-btn.blue:hover { background: rgba(126,184,255,0.1); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 200; align-items: flex-end; justify-content: center; padding-bottom: 0; }
+  .modal-overlay.active { display: flex; animation: overlayIn 0.2s ease; }
+  @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-sheet { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px 14px 0 0; padding: 1.5rem 1.4rem 2rem; width: 100%; max-width: 480px; animation: sheetUp 0.25s cubic-bezier(.32,0,.18,1); }
+  @keyframes sheetUp { from { transform: translateY(60px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .modal-title { font-size: 1.1rem; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; }
+  .modal-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 1.3rem; }
+  .modal-actions { display: flex; gap: 0.65rem; }
+  .modal-cancel { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); color: var(--muted); border-radius: var(--radius); padding: 0.55rem 1rem; font-size: 1rem; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.15s; }
+  .modal-cancel:hover { background: var(--border); }
+  .modal-confirm { flex: 1; background: transparent; border-radius: var(--radius); padding: 0.55rem 1rem; font-size: 1rem; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.15s; }
+  .modal-confirm.red { border: 1.5px solid var(--red); color: var(--red); }
+  .modal-confirm.red:hover { background: rgba(255,140,140,0.12); }
+  .modal-confirm.blue { border: 1.5px solid var(--blue); color: var(--blue); }
+  .modal-confirm.blue:hover { background: rgba(126,184,255,0.12); }
 </style>
 </head>
 <body>
@@ -120,14 +137,26 @@
   </div>
 </div>
 
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-sub" id="modalSub"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="modalCancel">Cancel</button>
+      <button class="modal-confirm" id="modalConfirm"></button>
+    </div>
+  </div>
+</div>
+
 <div class="bottom-bar">
-  <button class="reset-btn red" id="resetBtn">
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1 0 1.5-3.9" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round"/><path d="M2 4v4h4" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Reset
-  </button>
   <button class="reset-btn blue" id="bagCheckBtn">
     <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M5 2h6l1.5 3H3.5L5 2z" stroke="#7eb8ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="5" width="12" height="9" rx="1.5" stroke="#7eb8ff" stroke-width="1.6"/></svg>
     Bag Check
+  </button>
+  <button class="reset-btn red" id="resetBtn">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1 0 1.5-3.9" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round"/><path d="M2 4v4h4" stroke="#ff8c8c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Reset
   </button>
 </div>
 
@@ -165,18 +194,64 @@
     });
   });
 
+  // Modal logic
+  const overlay = document.getElementById('modalOverlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalSub = document.getElementById('modalSub');
+  const modalConfirm = document.getElementById('modalConfirm');
+  const modalCancel = document.getElementById('modalCancel');
+  let pendingAction = null;
+
+  function showModal(title, sub, confirmLabel, colorClass, action) {
+    modalTitle.textContent = title;
+    modalSub.textContent = sub;
+    modalConfirm.textContent = confirmLabel;
+    modalConfirm.className = 'modal-confirm ' + colorClass;
+    pendingAction = action;
+    overlay.classList.add('active');
+  }
+
+  function closeModal() {
+    overlay.classList.remove('active');
+    pendingAction = null;
+  }
+
+  modalCancel.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+
+  modalConfirm.addEventListener('click', () => {
+    if (pendingAction) pendingAction();
+    closeModal();
+  });
+
   // Reset: clears Gear + Accessories only (not In Bag)
   document.getElementById('resetBtn').addEventListener('click', () => {
-    NON_BAG_IDS.forEach(id => checked.delete(id));
-    localStorage.setItem('gymChecked', JSON.stringify([...checked]));
-    render();
+    showModal(
+      'Are you sure you\'d like to Reset?',
+      'This will uncheck Gear & Accessories, but leave In Bag untouched.',
+      'Reset',
+      'red',
+      () => {
+        NON_BAG_IDS.forEach(id => checked.delete(id));
+        localStorage.setItem('gymChecked', JSON.stringify([...checked]));
+        render();
+      }
+    );
   });
 
   // Bag Check: clears In Bag only
   document.getElementById('bagCheckBtn').addEventListener('click', () => {
-    BAG_IDS.forEach(id => checked.delete(id));
-    localStorage.setItem('gymChecked', JSON.stringify([...checked]));
-    render();
+    showModal(
+      'Are you sure you\'d like to Bag Check?',
+      'This will uncheck all In Bag items.',
+      'Bag Check',
+      'blue',
+      () => {
+        BAG_IDS.forEach(id => checked.delete(id));
+        localStorage.setItem('gymChecked', JSON.stringify([...checked]));
+        render();
+      }
+    );
   });
 
   render();
